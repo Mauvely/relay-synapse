@@ -1,0 +1,14 @@
+{
+  "managed_servers": ["a.example", "b.example"],
+  "members": {"@alex:a.example":"buyer", "@bo:b.example":"partner", "@li:a.example":"buyer","@op:b.example":"public"},
+  "organisations": {"buyer":{"policy":"allowlist","allow":["partner"]},"partner":{"policy":"allowlist","allow":["buyer"]},"public":{"policy":"open"}},
+  "cases": [
+    {"name":"same organisation","sender":"@alex:a.example","recipient":"@li:a.example","allow":true},
+    {"name":"mutual agreement across hosted domains","sender":"@alex:a.example","recipient":"@bo:b.example","allow":true},
+    {"name":"one side withdraws consent","sender":"@alex:a.example","recipient":"@bo:b.example","override":{"partner":{"policy":"closed"}},"allow":false},
+    {"name":"reverse direction observes same consent","sender":"@bo:b.example","recipient":"@alex:a.example","override":{"partner":{"policy":"closed"}},"allow":false},
+    {"name":"closed organisation excludes individual","sender":"@person:b.example","recipient":"@alex:a.example","allow":false},
+    {"name":"open organisation permits external peer","sender":"@op:b.example","recipient":"@remote:independent.example","allow":true},
+    {"name":"restricted organisation excludes independent peer","sender":"@remote:independent.example","recipient":"@alex:a.example","allow":false}
+  ]
+}
