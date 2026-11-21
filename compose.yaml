@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: docker.io/library/postgres:16@sha256:3950ad7c3148ca2175ef1b6c36c9efbf78957ae8fbe8b3a5d7c35af50500382f
+    env_file: config/postgres.env
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "synapse"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+  synapse:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SYNAPSE_CONFIG_PATH: /config/homeserver.yaml
+      UID: "${RELAY_UID:?set to your local uid}"
+      GID: "${RELAY_GID:?set to your local gid}"
+    ports:
+      - 127.0.0.1:8008:8008
+    volumes:
+      - ./config:/config:ro
+      - media-and-keys:/data
+volumes:
+  database:
+  media-and-keys:
